@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
+import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
@@ -54,6 +55,11 @@ class FeedFragment : Fragment() {
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
             }
+
+            override fun onPhoto(post: Post) {
+                findNavController().navigate(R.id.action_feedFragment_to_fragmentPhoto,
+                    Bundle().apply { textArg = post.attachment?.url })
+            }
         })
         binding.list.adapter = adapter
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
@@ -84,11 +90,8 @@ class FeedFragment : Fragment() {
             }
             binding.newPosts.setOnClickListener {
                 viewModel.showAll()
-                //скрол только до предпоследнего поста на новый не скролит
-                //binding.list.smoothScrollToPosition(0)
                 binding.newPosts.visibility = View.GONE
             }
-//            println(state)
         }
 
 

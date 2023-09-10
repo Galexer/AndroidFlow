@@ -1,14 +1,17 @@
 package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
+import ru.netology.nmedia.dto.AttachmentType
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.view.loadCircleCrop
 
@@ -17,6 +20,7 @@ interface OnInteractionListener {
     fun onEdit(post: Post) {}
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
+    fun onPhoto(post: Post) {}
 }
 
 class PostsAdapter(
@@ -46,6 +50,20 @@ class PostViewHolder(
             avatar.loadCircleCrop("${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}")
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
+
+            if(post.attachment != null) {
+                if(post.attachment.type == AttachmentType.IMAGE) {
+                    imageAtt.visibility = View.VISIBLE
+                    Glide.with(imageAtt)
+                        .load("http://10.0.2.2:9999/media/${post.attachment.url}")
+                        .timeout(10_000)
+                        .into(imageAtt)
+                }
+            }
+
+            imageAtt.setOnClickListener{
+                    onInteractionListener.onPhoto(post)
+            }
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
