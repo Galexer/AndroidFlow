@@ -24,4 +24,7 @@
     <string name="new_posts">Свежие записи</string>
     <string name="menu_save">Сохранить</string>
     <string name="clear">Очистить</string>
+    <string name="pick_error">Ошибка прикрепления фото</string>
+    <string name="post_img_attachment">фото поста (вложение)</string>
+    <string name="post_img">фото поста</string>
 </resources>
