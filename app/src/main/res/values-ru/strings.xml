@@ -27,4 +27,21 @@
     <string name="pick_error">Ошибка прикрепления фото</string>
     <string name="post_img_attachment">фото поста (вложение)</string>
     <string name="post_img">фото поста</string>
+    <string name="authorize">Войти</string>
+    <string name="register">Зарегистрироваться</string>
+    <string name="logout">Выйти</string>
+    <string name="password">Пароль</string>
+    <string name="login">Логин</string>
+    <string name="login_butt">Логин</string>
+    <string name="logOut">Вы уверены, что хотите выйти?</string>
+    <string name="loginQ">Вы хотите войти?</string>
+    <string name="name">Имя</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="add_avatar">Добавить аватарку</string>
+    <string name="not_match">Не совпадает пароль</string>
+    <string name="signed_in">Вы зарегистрировались как</string>
+    <string name="wrong_pas_login">Неверный логин или пароль</string>
+    <string name="error_registr">Ошибка, попробуйте еще раз!</string>
+    <string name="logged_in">Вы вошли как</string>
 </resources>

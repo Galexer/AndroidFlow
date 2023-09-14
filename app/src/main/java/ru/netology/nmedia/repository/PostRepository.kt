@@ -3,6 +3,7 @@ package ru.netology.nmedia.repository
 import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.Token
 import ru.netology.nmedia.model.PhotoModel
 
 interface PostRepository {
@@ -14,5 +15,8 @@ interface PostRepository {
     suspend fun removeById(id: Long)
     suspend fun likeById(id: Long)
     suspend fun showAll()
+    suspend fun getToken(login: String, pass: String): Token
+    suspend fun registration(login: String, pass: String, name: String): Token
+    suspend fun registrationWithPhoto(login: String, pass: String, name: String, photo: PhotoModel): Token
 }
 

@@ -1,17 +1,21 @@
 package ru.netology.nmedia.repository
 
+import android.widget.Toast
 import androidx.lifecycle.*
+import com.google.gson.Gson
+import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import ru.netology.nmedia.api.*
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dao.PostDao
-import ru.netology.nmedia.dto.Attachment
-import ru.netology.nmedia.dto.AttachmentType
-import ru.netology.nmedia.dto.Media
-import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.entity.toDto
 import ru.netology.nmedia.entity.toEntity
@@ -115,5 +119,55 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override suspend fun showAll() {
         dao.showAll()
         dao.getAll()
+    }
+
+    override suspend fun getToken(login: String, pass: String): Token {
+        try {
+            val response = PostsApi.service.updateUser(login, pass)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            return body
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun registration(login: String, pass: String, name: String): Token{
+        try {
+            val response = PostsApi.service.registerUser(login, pass, name)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            return body
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun registrationWithPhoto(login: String, pass: String, name: String, photo: PhotoModel): Token{
+        try {
+            val response = PostsApi.service.registerWithPhoto(
+                login.toRequestBody("text/plain".toMediaType()),
+                pass.toRequestBody("text/plain".toMediaType()),
+                name.toRequestBody("text/plain".toMediaType()),
+                MultipartBody.Part.createFormData("file", "file", photo.file.asRequestBody())
+            )
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            return body
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 }
