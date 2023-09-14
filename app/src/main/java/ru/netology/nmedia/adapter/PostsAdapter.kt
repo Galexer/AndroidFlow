@@ -56,7 +56,7 @@ class PostViewHolder(
                 if(post.attachment.type == AttachmentType.IMAGE) {
                     imageAtt.visibility = View.VISIBLE
                     Glide.with(imageAtt)
-                        .load("http://10.0.2.2:9999/media/${post.attachment.url}")
+                        .load("${BuildConfig.MEDIA_URL}${post.attachment.url}")
                         .timeout(10_000)
                         .into(imageAtt)
                 }
