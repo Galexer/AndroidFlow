@@ -3,13 +3,15 @@ package ru.netology.nmedia.auth
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import androidx.work.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import ru.netology.nmedia.dto.Token
+import ru.netology.nmedia.warker.SendPushTokenWorker
 
 
 class AppAuth private constructor(
-    context: Context
+    private val context: Context
         ) {
 
     companion object{
@@ -42,6 +44,25 @@ class AppAuth private constructor(
         }
     }
 
+    fun sendPushToken(token: String? = null){
+        WorkManager.getInstance(context)
+            .enqueueUniqueWork(SendPushTokenWorker.NAME,
+                ExistingWorkPolicy.REPLACE,
+                OneTimeWorkRequestBuilder<SendPushTokenWorker>()
+                    .setInputData(
+                        Data.Builder()
+                            .putString(SendPushTokenWorker.TOKEN_KEY, token)
+                            .build()
+                    )
+                    .setConstraints(
+                        Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.CONNECTED)
+                            .build()
+                    )
+                    .build()
+            )
+    }
+
     @Synchronized
     fun setToken(token: Token) {
         _data.value = token
@@ -49,11 +70,13 @@ class AppAuth private constructor(
             putString(TOKEN_KEY, token.token)
             putLong(ID_KEY, token.id)
         }
+        sendPushToken()
     }
 
     @Synchronized
     fun clearAuth() {
         _data.value = null
         pref.edit { clear() }
+        sendPushToken()
     }
 }
