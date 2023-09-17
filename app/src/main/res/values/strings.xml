@@ -43,4 +43,6 @@
     <string name="wrong_pas_login">wrong login or password</string>
     <string name="error_registr">Error, try again!</string>
     <string name="logged_in">you are logged in as</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

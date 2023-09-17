@@ -44,4 +44,6 @@
     <string name="wrong_pas_login">Неверный логин или пароль</string>
     <string name="error_registr">Ошибка, попробуйте еще раз!</string>
     <string name="logged_in">Вы вошли как</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>
