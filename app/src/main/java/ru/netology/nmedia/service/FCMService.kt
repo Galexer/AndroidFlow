@@ -56,7 +56,7 @@ class FCMService : FirebaseMessagingService() {
                     Action.LIKE -> handleLike(gson.fromJson(message.data[content], Like::class.java))
                 }
             }
-        } else if(id == 0L || id != 0L) {
+        } else {
             AppAuth.getInstance().sendPushToken(AppAuth.getInstance().data.value?.token)
         }
     }
