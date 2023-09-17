@@ -26,4 +26,23 @@
     <string name="pick_error">Photo pick error</string>
     <string name="post_img_attachment">post img attachment</string>
     <string name="post_img">post img</string>
+    <string name="authorize">Authorize</string>
+    <string name="register">Register</string>
+    <string name="logout">Logout</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="login_butt">Login</string>
+    <string name="logOut">Are you sure you want to quit?</string>
+    <string name="loginQ">Do You want to login</string>
+    <string name="name">Name</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="sign_up">Sign up</string>
+    <string name="add_avatar">Add avatar</string>
+    <string name="not_match">Passwords don\'t match</string>
+    <string name="signed_in">you are signed up as</string>
+    <string name="wrong_pas_login">wrong login or password</string>
+    <string name="error_registr">Error, try again!</string>
+    <string name="logged_in">you are logged in as</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

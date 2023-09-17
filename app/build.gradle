@@ -37,11 +37,14 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders.usesCleartextTraffic = false
+            buildConfigField "String", "MEDIA_URL", '"http://10.0.2.2:9999/media/"'
             buildConfigField "String", "BASE_URL", '"https://netomedia.ru"'
+
         }
         debug {
             manifestPlaceholders.usesCleartextTraffic = true
             buildConfigField "String", "BASE_URL", '"http://10.0.2.2:9999"'
+            buildConfigField "String", "MEDIA_URL", '"http://10.0.2.2:9999/media/"'
         }
     }
 }
@@ -69,6 +72,7 @@ dependencies {
     def coroutines_version = "1.7.0"
     def play_services_base_version = "18.1.0"
     def imagepicker_version = "2.1"
+    def workmanager_version = "2.7.1"
 
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
@@ -98,6 +102,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
     implementation "com.google.android.gms:play-services-base:$play_services_base_version"
     implementation "com.github.dhaval2404:imagepicker:$imagepicker_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutines_version"
+    implementation "androidx.work:work-runtime-ktx:$workmanager_version"
 
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"

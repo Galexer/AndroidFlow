@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.snackbar.Snackbar
+import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OnInteractionListener
@@ -44,7 +45,7 @@ class PhotoFragment : Fragment() {
 
         binding.imageAtt.visibility = View.VISIBLE
         Glide.with(binding.imageAtt)
-            .load("http://10.0.2.2:9999/media/${arguments?.textArg}")
+            .load("${BuildConfig.MEDIA_URL}${arguments?.textArg}")
             .timeout(10_000)
             .into(binding.imageAtt)
 

@@ -1,11 +1,13 @@
 package ru.netology.nmedia.activity
 
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ScrollView
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,13 +18,18 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.nmedia.dialog.DialogFrafment
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
+import androidx.fragment.app.FragmentManager
 
 class FeedFragment : Fragment() {
 
     private val viewModel: PostViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,13 +38,20 @@ class FeedFragment : Fragment() {
     ): View {
         val binding = FragmentFeedBinding.inflate(inflater, container, false)
 
+        val dialog = DialogFrafment(getString(R.string.loginQ))
+        val support = childFragmentManager
+
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
             }
 
             override fun onLike(post: Post) {
-                viewModel.likeById(post.id)
+                if(authViewModel.isAuthorized) {
+                    viewModel.likeById(post.id)
+                }else {
+                    dialog.show(support, "tag")
+                }
             }
 
             override fun onRemove(post: Post) {
@@ -84,7 +98,6 @@ class FeedFragment : Fragment() {
             }
         })
         viewModel.newerCount.observe(viewLifecycleOwner) { state ->
-            // TODO: just log it, interaction must be in homework
             if(state != 0){
                 binding.newPosts.visibility = View.VISIBLE
             }
@@ -108,7 +121,17 @@ class FeedFragment : Fragment() {
         }
 
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            if(authViewModel.isAuthorized) {
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            }else {
+                dialog.show(support, "tag")
+            }
+        }
+
+        dialog.no.observe(viewLifecycleOwner){
+            if(it) {
+                findNavController().navigate(R.id.action_feedFragment_to_loginApp)
+            }
         }
 
         return binding.root

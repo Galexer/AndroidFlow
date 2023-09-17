@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -55,7 +56,7 @@ class PostViewHolder(
                 if(post.attachment.type == AttachmentType.IMAGE) {
                     imageAtt.visibility = View.VISIBLE
                     Glide.with(imageAtt)
-                        .load("http://10.0.2.2:9999/media/${post.attachment.url}")
+                        .load("${BuildConfig.MEDIA_URL}${post.attachment.url}")
                         .timeout(10_000)
                         .into(imageAtt)
                 }
@@ -65,6 +66,7 @@ class PostViewHolder(
                     onInteractionListener.onPhoto(post)
             }
 
+            menu.isVisible = post.ownedByMe
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
