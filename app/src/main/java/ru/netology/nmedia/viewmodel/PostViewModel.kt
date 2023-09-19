@@ -2,6 +2,8 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
+import androidx.paging.PagingData
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,24 +30,18 @@ private val empty = Post(
 
 @HiltViewModel
 @ExperimentalCoroutinesApi
-class PostViewModel @Inject constructor (
+class PostViewModel @Inject constructor(
     application: Application,
     private val repository: PostRepository,
     appAuth: AppAuth
 ) : AndroidViewModel(application) {
 
-    val data: LiveData<FeedModel> = appAuth.data.flatMapLatest {token ->
+    val data: Flow<PagingData<Post>> = appAuth.data.flatMapLatest { token ->
         repository.data
-            .map {posts->
-                posts.map {
-                    it.copy(ownedByMe = it.authorId == token?.id)
-                }
+            .map { posts ->
+                posts.map { it.copy(ownedByMe = it.authorId == token?.id) }
             }
-            .map{
-                FeedModel(it)
-            }
-    }
-        .asLiveData(Dispatchers.Default)
+    }.flowOn(Dispatchers.Default)
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
@@ -55,11 +51,11 @@ class PostViewModel @Inject constructor (
     val photo: LiveData<PhotoModel?>
         get() = _photo
 
-    val newerCount: LiveData<Int> = data.switchMap {
-        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0L)
-            .catch { e -> e.printStackTrace() }
-            .asLiveData(Dispatchers.Default)
-    }
+//        val newerCount: LiveData<Int> = data.switchMap {
+//            repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0L)
+//                .catch { e -> e.printStackTrace() }
+//                .asLiveData(Dispatchers.Default)
+//        }
 
     private val edited = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()
@@ -132,7 +128,7 @@ class PostViewModel @Inject constructor (
     fun showAll() = viewModelScope.launch {
         try {
             repository.showAll()
-            _dataState.value=FeedModelState()
+            _dataState.value = FeedModelState()
         } catch (e: Exception) {
             _dataState.value = FeedModelState(error = true)
         }
@@ -141,6 +137,7 @@ class PostViewModel @Inject constructor (
     fun clearPhoto() {
         _photo.value = null
     }
+
     fun satPhoto(photoModel: PhotoModel) {
         _photo.value = photoModel
     }

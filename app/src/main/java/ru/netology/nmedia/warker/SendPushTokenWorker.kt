@@ -31,16 +31,18 @@ class SendPushTokenWorker @Inject constructor(
     @InstallIn(SingletonComponent::class)
     @EntryPoint
     interface AppAuthEntryPoint {
-        fun getApiServices() : ApiService
+        fun getApiServices(): ApiService
     }
+
     override suspend fun doWork(): Result {
         val token = this.inputData.getString(TOKEN_KEY)
         return try {
             val request = PushToken(token ?: FirebaseMessaging.getInstance().token.await())
-            val entryPoint = EntryPointAccessors.fromApplication(appContext, AppAuthEntryPoint::class.java)
+            val entryPoint =
+                EntryPointAccessors.fromApplication(appContext, AppAuthEntryPoint::class.java)
             entryPoint.getApiServices().sendPushToken(request)
             Result.success()
-        } catch (e: Exception ){
+        } catch (e: Exception) {
             e.printStackTrace()
             Result.retry()
         }

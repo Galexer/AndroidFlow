@@ -1,6 +1,8 @@
 package ru.netology.nmedia.repository
 
 import androidx.lifecycle.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -25,10 +27,15 @@ import javax.inject.Inject
 class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
     private val postApi: ApiService
-    ) : PostRepository {
-    override val data = dao.getAll()
-        .map(List<PostEntity>::toDto)
-        .flowOn(Dispatchers.Default)
+) : PostRepository {
+    override val data = Pager(
+        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+        pagingSourceFactory = {
+            PostPagingSource(
+                postApi
+            )
+        }
+    ).flow
 
     override suspend fun getAll() {
         try {
@@ -83,7 +90,8 @@ class PostRepositoryImpl @Inject constructor(
         val media = uploadMedia(photo)
 
         try {
-            val response = postApi.save(post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE)))
+            val response =
+                postApi.save(post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE)))
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -135,7 +143,7 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun registration(login: String, pass: String, name: String): Token{
+    override suspend fun registration(login: String, pass: String, name: String): Token {
         try {
             val response = postApi.registerUser(login, pass, name)
             if (!response.isSuccessful) {
@@ -150,7 +158,12 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun registrationWithPhoto(login: String, pass: String, name: String, photo: PhotoModel): Token{
+    override suspend fun registrationWithPhoto(
+        login: String,
+        pass: String,
+        name: String,
+        photo: PhotoModel
+    ): Token {
         try {
             val response = postApi.registerWithPhoto(
                 login.toRequestBody("text/plain".toMediaType()),

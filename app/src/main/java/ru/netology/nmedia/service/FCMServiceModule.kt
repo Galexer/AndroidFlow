@@ -12,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 class FCMServiceModule {
 
     @Provides
-    fun provideGoogleApiAvailability() : GoogleApiAvailability =
+    fun provideGoogleApiAvailability(): GoogleApiAvailability =
         GoogleApiAvailability.getInstance()
 
     @Provides

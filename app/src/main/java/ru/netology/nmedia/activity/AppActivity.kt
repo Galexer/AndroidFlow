@@ -25,12 +25,14 @@ import ru.netology.nmedia.viewmodel.AuthViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AppActivity () : AppCompatActivity(R.layout.activity_app) {
+class AppActivity() : AppCompatActivity(R.layout.activity_app) {
 
     @Inject
     lateinit var appAuth: AppAuth
+
     @Inject
     lateinit var googleApiAvailability: GoogleApiAvailability
+
     @Inject
     lateinit var firebaseMessaging: FirebaseMessaging
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +74,7 @@ class AppActivity () : AppCompatActivity(R.layout.activity_app) {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.menu_auth, menu)
                     val authorized = viewModel.isAuthorized
-                    if(authorized) {
+                    if (authorized) {
                         menu.setGroupVisible(R.id.authorized, true)
                         menu.setGroupVisible(R.id.unauthorized, false)
                     } else {
@@ -82,7 +84,7 @@ class AppActivity () : AppCompatActivity(R.layout.activity_app) {
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-                    when(menuItem.itemId) {
+                    when (menuItem.itemId) {
                         R.id.auth -> {
                             findNavController(R.id.nav_host_fragment).navigate(R.id.action_feedFragment_to_loginApp)
                             //appAuth.setToken(Token(5L, "x-Token"))
@@ -94,8 +96,8 @@ class AppActivity () : AppCompatActivity(R.layout.activity_app) {
                         }
                         R.id.logout -> {
                             dialog.show(support, "tag")
-                            dialog.no.observe(this@AppActivity){
-                                if(it) {
+                            dialog.no.observe(this@AppActivity) {
+                                if (it) {
                                     appAuth.clearAuth()
                                 }
                             }
@@ -105,7 +107,7 @@ class AppActivity () : AppCompatActivity(R.layout.activity_app) {
                     }
 
             }.apply {
-                    oldMenuProvider = this
+                oldMenuProvider = this
             }, this)
         }
     }
@@ -123,6 +125,7 @@ class AppActivity () : AppCompatActivity(R.layout.activity_app) {
 
         requestPermissions(arrayOf(permission), 1)
     }
+
     fun checkGoogleApiAvailability(
         googleApiAvailability: GoogleApiAvailability,
         firebaseMessaging: FirebaseMessaging

@@ -28,16 +28,17 @@ class AppAuth @Inject constructor(
         val token = pref.getString(TOKEN_KEY, null)
         val id = pref.getLong(ID_KEY, 0)
 
-        if(token == null || id == 0L) {
+        if (token == null || id == 0L) {
             pref.edit { clear() }
         } else {
             _data.value = Token(id, token)
         }
     }
 
-    fun sendPushToken(token: String? = null){
+    fun sendPushToken(token: String? = null) {
         WorkManager.getInstance(context)
-            .enqueueUniqueWork(SendPushTokenWorker.NAME,
+            .enqueueUniqueWork(
+                SendPushTokenWorker.NAME,
                 ExistingWorkPolicy.REPLACE,
                 OneTimeWorkRequestBuilder<SendPushTokenWorker>()
                     .setInputData(
@@ -57,7 +58,7 @@ class AppAuth @Inject constructor(
     @Synchronized
     fun setToken(token: Token) {
         _data.value = token
-        pref.edit{
+        pref.edit {
             putString(TOKEN_KEY, token.token)
             putLong(ID_KEY, token.id)
         }

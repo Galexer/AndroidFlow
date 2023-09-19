@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
@@ -21,9 +23,10 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
-class FeedFragment () : Fragment() {
+class FeedFragment() : Fragment() {
 
     private val viewModel: PostViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
@@ -44,9 +47,9 @@ class FeedFragment () : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                if(authViewModel.isAuthorized) {
+                if (authViewModel.isAuthorized) {
                     viewModel.likeById(post.id)
-                }else {
+                } else {
                     dialog.show(support, "tag")
                 }
             }
@@ -82,51 +85,66 @@ class FeedFragment () : Fragment() {
                     .show()
             }
         }
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            adapter.submitList(state.posts)
-            binding.emptyText.isVisible = state.empty
+        lifecycleScope.launchWhenCreated {
+            viewModel.data.collectLatest {
+                adapter.submitData(it)
+            }
         }
 
         adapter.registerAdapterDataObserver(object : AdapterDataObserver() {
             override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
-                if(positionStart == 0) {
+                if (positionStart == 0) {
                     binding.list.smoothScrollToPosition(0)
                 }
             }
         })
-        viewModel.newerCount.observe(viewLifecycleOwner) { state ->
-            if(state != 0){
-                binding.newPosts.visibility = View.VISIBLE
-            }
-            binding.newPosts.setOnClickListener {
-                viewModel.showAll()
-                binding.newPosts.visibility = View.GONE
-            }
-        }
+//        viewModel.newerCount.observe(viewLifecycleOwner) { state ->
+//            if(state != 0){
+//                binding.newPosts.visibility = View.VISIBLE
+//            }
+//            binding.newPosts.setOnClickListener {
+//                viewModel.showAll()
+//                binding.newPosts.visibility = View.GONE
+//            }
+//        }
 
 
         adapter.registerAdapterDataObserver(object : AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                if(positionStart == 0) {
+                if (positionStart == 0) {
                     binding.list.smoothScrollToPosition(0)
                 }
             }
         })
 
+        lifecycleScope.launchWhenCreated {
+            adapter.loadStateFlow.collectLatest {
+                binding.swiperefresh.isRefreshing = it.refresh is LoadState.Loading
+                        || it.append is LoadState.Loading
+                        || it.prepend is LoadState.Loading
+            }
+        }
+
         binding.swiperefresh.setOnRefreshListener {
-            viewModel.refreshPosts()
+            adapter.refresh()
+        }
+
+        lifecycleScope.launchWhenCreated {
+            authViewModel.data.observe(viewLifecycleOwner) {
+                adapter.refresh()
+            }
         }
 
         binding.fab.setOnClickListener {
-            if(authViewModel.isAuthorized) {
+            if (authViewModel.isAuthorized) {
                 findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
-            }else {
+            } else {
                 dialog.show(support, "tag")
             }
         }
 
-        dialog.no.observe(viewLifecycleOwner){
-            if(it) {
+        dialog.no.observe(viewLifecycleOwner) {
+            if (it) {
                 findNavController().navigate(R.id.action_feedFragment_to_loginApp)
             }
         }

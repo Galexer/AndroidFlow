@@ -9,7 +9,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val appAuth: AppAuth
-): ViewModel() {
+) : ViewModel() {
     val data = appAuth.data
         .asLiveData()
 

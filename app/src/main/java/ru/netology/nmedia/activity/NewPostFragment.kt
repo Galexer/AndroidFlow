@@ -28,16 +28,21 @@ class NewPostFragment : Fragment() {
 
     private val viewModel: PostViewModel by activityViewModels()
 
-    private val photoPickerContract = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        when(it.resultCode) {
-            ImagePicker.RESULT_ERROR -> Toast.makeText(requireContext(), getString(R.string.pick_error), Toast.LENGTH_SHORT)
-                .show()
-            Activity.RESULT_OK -> {
-                val uri = it.data?.data ?: return@registerForActivityResult
-                viewModel.satPhoto(PhotoModel(uri, uri.toFile()))
+    private val photoPickerContract =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            when (it.resultCode) {
+                ImagePicker.RESULT_ERROR -> Toast.makeText(
+                    requireContext(),
+                    getString(R.string.pick_error),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                Activity.RESULT_OK -> {
+                    val uri = it.data?.data ?: return@registerForActivityResult
+                    viewModel.satPhoto(PhotoModel(uri, uri.toFile()))
+                }
             }
         }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,26 +62,26 @@ class NewPostFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        binding.clear.setOnClickListener{
+        binding.clear.setOnClickListener {
             viewModel.clearPhoto()
         }
 
-        binding.pickPhoto.setOnClickListener{
+        binding.pickPhoto.setOnClickListener {
             ImagePicker.with(this)
                 .galleryOnly()
                 .crop()
                 .createIntent(photoPickerContract::launch)
         }
 
-        binding.takePhoto.setOnClickListener{
+        binding.takePhoto.setOnClickListener {
             ImagePicker.with(this)
                 .cameraOnly()
                 .crop()
                 .createIntent(photoPickerContract::launch)
         }
 
-        viewModel.photo.observe(viewLifecycleOwner){photo ->
-            if(photo == null){
+        viewModel.photo.observe(viewLifecycleOwner) { photo ->
+            if (photo == null) {
                 binding.previewContainer.isGone = true
                 return@observe
             }
@@ -90,7 +95,7 @@ class NewPostFragment : Fragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-                when(menuItem.itemId) {
+                when (menuItem.itemId) {
                     R.id.save -> {
                         viewModel.changeContent(binding.edit.text.toString())
                         viewModel.save()
