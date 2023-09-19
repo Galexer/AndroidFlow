@@ -1,22 +1,27 @@
 package ru.netology.nmedia.viewmodel
 
 import android.app.Application
+import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.PostRepository
-import ru.netology.nmedia.repository.PostRepositoryImpl
+import javax.inject.Inject
 
-class LoginRegViewModel(application: Application) : AndroidViewModel(application) {
-    private val context = getApplication<Application>().applicationContext
-
-    private val repository: PostRepository =
-        PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
+@HiltViewModel
+class LoginRegViewModel @Inject constructor (
+    application: Application,
+    private val repository: PostRepository,
+    private val appAuth: AppAuth,
+    @ApplicationContext
+    val appContext: Context,
+) : AndroidViewModel(application) {
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
@@ -26,16 +31,16 @@ class LoginRegViewModel(application: Application) : AndroidViewModel(application
     val photo: LiveData<PhotoModel?>
         get() = _photo
 
-    val data = AppAuth.getInstance().data
+    val data = appAuth.data
         .asLiveData()
 
     fun login (login: String, pass: String) = viewModelScope.launch {
         try {
             val token = repository.getToken(login, pass)
-            AppAuth.getInstance().setToken(token)
-            Toast.makeText(context, context.getString(R.string.logged_in) + login, Toast.LENGTH_SHORT).show()
+            appAuth.setToken(token)
+            Toast.makeText(appContext, appContext.getString(R.string.logged_in) + login, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(context, R.string.wrong_pas_login, Toast.LENGTH_SHORT).show()
+            Toast.makeText(appContext, R.string.wrong_pas_login, Toast.LENGTH_SHORT).show()
             _dataState.value = FeedModelState(error = true)
         }
     }
@@ -50,19 +55,19 @@ class LoginRegViewModel(application: Application) : AndroidViewModel(application
         try {
             if (photo.value != null) {
                 val token = repository.registrationWithPhoto(login, pass, name, photo.value!!)
-                AppAuth.getInstance().setToken(token)
-                Toast.makeText(context, context.getString(R.string.signed_in) + login, Toast.LENGTH_SHORT).show()
+                appAuth.setToken(token)
+                Toast.makeText(appContext, appContext.getString(R.string.signed_in) + login, Toast.LENGTH_SHORT).show()
             } else {
                 val token = repository.registration(login, pass, name)
-                AppAuth.getInstance().setToken(token)
-                Toast.makeText(context, context.getString(R.string.signed_in) + login, Toast.LENGTH_SHORT).show()
+                appAuth.setToken(token)
+                Toast.makeText(appContext, appContext.getString(R.string.signed_in) + login, Toast.LENGTH_SHORT).show()
             }
         }catch (e: Exception) {
-            Toast.makeText(context, R.string.error_registr, Toast.LENGTH_SHORT).show()
+            Toast.makeText(appContext, R.string.error_registr, Toast.LENGTH_SHORT).show()
             _dataState.value = FeedModelState(error = true)
         }
     }
 
     val isAuthorized: Boolean
-        get() = AppAuth.getInstance().data.value != null
+        get() = appAuth.data.value != null
 }

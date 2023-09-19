@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
 import androidx.core.view.MenuProvider

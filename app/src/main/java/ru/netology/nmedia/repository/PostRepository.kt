@@ -1,7 +1,6 @@
 package ru.netology.nmedia.repository
 
 import kotlinx.coroutines.flow.Flow
-import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.Token
 import ru.netology.nmedia.model.PhotoModel

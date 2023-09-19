@@ -4,30 +4,21 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.work.*
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import ru.netology.nmedia.dto.Token
 import ru.netology.nmedia.warker.SendPushTokenWorker
+import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
+class AppAuth @Inject constructor(
+    @ApplicationContext private val context: Context,
+) {
 
-class AppAuth private constructor(
-    private val context: Context
-        ) {
-
-    companion object{
-        private const val TOKEN_KEY = "TOKEN_KEY"
-        private const val ID_KEY = "ID_KEY"
-
-        @Volatile
-        private var INSTANCE: AppAuth? = null
-
-        fun initApp(context: Context){
-            INSTANCE = AppAuth(context)
-        }
-        fun getInstance(): AppAuth = requireNotNull(INSTANCE) {
-            "first initApp"
-        }
-    }
+    private val TOKEN_KEY = "TOKEN_KEY"
+    private val ID_KEY = "ID_KEY"
 
     private val pref: SharedPreferences = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
     private val _data = MutableStateFlow<Token?>(null)
