@@ -45,4 +45,8 @@
     <string name="logged_in">you are logged in as</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="today">today</string>
+    <string name="yesterday">yesterday</string>
+    <string name="last_week">Last week</string>
+    <string name="unknown_day">unknown day</string>
 </resources>

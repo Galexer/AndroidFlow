@@ -12,6 +12,23 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/common_spacing">
 
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#bcbcbc"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/menu"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="today" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="date" />
+
         <ImageView
             android:id="@+id/avatar"
             android:layout_width="@dimen/posts_avatar_size"
@@ -20,7 +37,7 @@
             android:contentDescription="@string/description_post_author_avatar"
             app:layout_constraintBottom_toBottomOf="@id/header"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/up"
             tools:srcCompat="@sample/posts.json/data/authorAvatar" />
 
         <TextView
@@ -34,7 +51,7 @@
             app:layout_constraintBottom_toTopOf="@+id/published"
             app:layout_constraintEnd_toStartOf="@id/menu"
             app:layout_constraintStart_toEndOf="@id/avatar"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/up"
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="@sample/posts.json/data/author" />
 
@@ -59,7 +76,7 @@
             android:contentDescription="@string/description_post_menu"
             app:icon="@drawable/ic_more_vert_24"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/up"
             style="@style/Widget.AppTheme.IconButton"
             />
 
