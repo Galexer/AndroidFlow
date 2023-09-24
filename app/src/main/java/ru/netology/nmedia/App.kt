@@ -5,4 +5,4 @@ import dagger.hilt.android.HiltAndroidApp
 import ru.netology.nmedia.auth.AppAuth
 
 @HiltAndroidApp
-class App: Application()
+class App : Application()

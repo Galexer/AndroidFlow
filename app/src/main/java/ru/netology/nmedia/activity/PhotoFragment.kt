@@ -19,7 +19,7 @@ class PhotoFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding =FragmentPhotoBinding.inflate(inflater, container, false)
+        val binding = FragmentPhotoBinding.inflate(inflater, container, false)
 
         binding.imageAtt.visibility = View.VISIBLE
         Glide.with(binding.imageAtt)

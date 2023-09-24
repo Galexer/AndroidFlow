@@ -19,15 +19,15 @@ class DbModule {
     fun provideDB(
         @ApplicationContext
         context: Context
-    ) : AppDb =
+    ): AppDb =
         Room.databaseBuilder(context, AppDb::class.java, "app.db")
-        //  .allowMainThreadQueries()
-        .fallbackToDestructiveMigration()
-        .build()
+            //  .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
+            .build()
 
-    @Provides
-    fun providePostDao(
-        appDb: AppDb
-    ) : PostDao = appDb.postDao()
+//    @Provides
+//    fun providePostDao(
+//        appDb: AppDb
+//    ): PostDao = appDb.postDao()
 
 }

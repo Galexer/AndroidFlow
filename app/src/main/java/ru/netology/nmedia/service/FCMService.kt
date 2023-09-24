@@ -46,7 +46,7 @@ class FCMService : FirebaseMessagingService() {
         val fullMess = gson.fromJson(message.data[content], PushMessage::class.java)
         val id = fullMess.recipientId
         val thisId = appAuth.data.value?.id
-        if(id == thisId || id == null) {
+        if (id == thisId || id == null) {
             //this notification for home work 14
             val notification = NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.ic_notification)
@@ -57,7 +57,12 @@ class FCMService : FirebaseMessagingService() {
 
             message.data[action]?.let {
                 when (Action.valueOf(it)) {
-                    Action.LIKE -> handleLike(gson.fromJson(message.data[content], Like::class.java))
+                    Action.LIKE -> handleLike(
+                        gson.fromJson(
+                            message.data[content],
+                            Like::class.java
+                        )
+                    )
                 }
             }
         } else {

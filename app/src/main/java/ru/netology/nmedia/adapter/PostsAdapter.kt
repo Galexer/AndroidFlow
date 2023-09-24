@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.core.view.isVisible
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -26,14 +27,14 @@ interface OnInteractionListener {
 
 class PostsAdapter(
     private val onInteractionListener: OnInteractionListener,
-) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
+) : PagingDataAdapter<Post, PostViewHolder>(PostDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PostViewHolder(binding, onInteractionListener)
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        val post = getItem(position)
+        val post = getItem(position) ?: return
         holder.bind(post)
     }
 }
@@ -52,8 +53,8 @@ class PostViewHolder(
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
 
-            if(post.attachment != null) {
-                if(post.attachment.type == AttachmentType.IMAGE) {
+            if (post.attachment != null) {
+                if (post.attachment.type == AttachmentType.IMAGE) {
                     imageAtt.visibility = View.VISIBLE
                     Glide.with(imageAtt)
                         .load("${BuildConfig.MEDIA_URL}${post.attachment.url}")
@@ -62,8 +63,8 @@ class PostViewHolder(
                 }
             }
 
-            imageAtt.setOnClickListener{
-                    onInteractionListener.onPhoto(post)
+            imageAtt.setOnClickListener {
+                onInteractionListener.onPhoto(post)
             }
 
             menu.isVisible = post.ownedByMe

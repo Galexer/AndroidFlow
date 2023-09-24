@@ -23,7 +23,7 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun provideLogging() : HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
+    fun provideLogging(): HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
         if (BuildConfig.DEBUG) {
             level = HttpLoggingInterceptor.Level.BODY
         }
@@ -32,11 +32,11 @@ class ApiModule {
     @Provides
     @Singleton
     fun provideOkhttp(
-        logging : HttpLoggingInterceptor,
+        logging: HttpLoggingInterceptor,
         appAuth: AppAuth
-    ) : OkHttpClient = OkHttpClient.Builder()
+    ): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(logging)
-        .addInterceptor {chain ->
+        .addInterceptor { chain ->
             appAuth.data.value?.token?.let { token ->
                 val newRequest = chain.request().newBuilder()
                     .addHeader("Authorization", token)
@@ -51,7 +51,7 @@ class ApiModule {
     @Singleton
     fun provideRetrofit(
         okHttp: OkHttpClient
-    ) : Retrofit = Retrofit.Builder()
+    ): Retrofit = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
         .client(okHttp)
@@ -59,7 +59,7 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun provideApiService (
+    fun provideApiService(
         retrofit: Retrofit
-    ) : ApiService = retrofit.create()
+    ): ApiService = retrofit.create()
 }

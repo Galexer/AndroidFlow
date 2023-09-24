@@ -1,6 +1,6 @@
 package ru.netology.nmedia.repository
 
-import androidx.lifecycle.*
+import androidx.paging.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -10,9 +10,10 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import ru.netology.nmedia.api.*
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.dao.PostRemoteKeyDao
+import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.PostEntity
-import ru.netology.nmedia.entity.toDto
 import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.AppError
@@ -24,11 +25,23 @@ import javax.inject.Inject
 
 class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
-    private val postApi: ApiService
-    ) : PostRepository {
-    override val data = dao.getAll()
-        .map(List<PostEntity>::toDto)
-        .flowOn(Dispatchers.Default)
+    private val postApi: ApiService,
+    postRemoteKeyDao: PostRemoteKeyDao,
+    appDb: AppDb,
+) : PostRepository {
+
+    @OptIn(ExperimentalPagingApi::class)
+    override val data: Flow<PagingData<Post>> = Pager(
+        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+        pagingSourceFactory = { dao.pagingSource() },
+        remoteMediator = PostRemoteMediator(
+            service = postApi,
+            postDao = dao,
+            postRemoteKeyDao = postRemoteKeyDao,
+            appDb = appDb,
+        )
+    ).flow
+        .map { it.map(PostEntity::toDto) }
 
     override suspend fun getAll() {
         try {
@@ -83,7 +96,8 @@ class PostRepositoryImpl @Inject constructor(
         val media = uploadMedia(photo)
 
         try {
-            val response = postApi.save(post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE)))
+            val response =
+                postApi.save(post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE)))
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -116,8 +130,7 @@ class PostRepositoryImpl @Inject constructor(
     }
 
     override suspend fun showAll() {
-        dao.showAll()
-        dao.getAll()
+        //dao.getAll()
     }
 
     override suspend fun getToken(login: String, pass: String): Token {
@@ -135,7 +148,7 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun registration(login: String, pass: String, name: String): Token{
+    override suspend fun registration(login: String, pass: String, name: String): Token {
         try {
             val response = postApi.registerUser(login, pass, name)
             if (!response.isSuccessful) {
@@ -150,7 +163,12 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun registrationWithPhoto(login: String, pass: String, name: String, photo: PhotoModel): Token{
+    override suspend fun registrationWithPhoto(
+        login: String,
+        pass: String,
+        name: String,
+        photo: PhotoModel
+    ): Token {
         try {
             val response = postApi.registerWithPhoto(
                 login.toRequestBody("text/plain".toMediaType()),

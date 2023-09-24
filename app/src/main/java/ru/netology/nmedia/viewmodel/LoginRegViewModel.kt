@@ -15,7 +15,7 @@ import ru.netology.nmedia.repository.PostRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginRegViewModel @Inject constructor (
+class LoginRegViewModel @Inject constructor(
     application: Application,
     private val repository: PostRepository,
     private val appAuth: AppAuth,
@@ -34,11 +34,15 @@ class LoginRegViewModel @Inject constructor (
     val data = appAuth.data
         .asLiveData()
 
-    fun login (login: String, pass: String) = viewModelScope.launch {
+    fun login(login: String, pass: String) = viewModelScope.launch {
         try {
             val token = repository.getToken(login, pass)
             appAuth.setToken(token)
-            Toast.makeText(appContext, appContext.getString(R.string.logged_in) + login, Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                appContext,
+                appContext.getString(R.string.logged_in) + login,
+                Toast.LENGTH_SHORT
+            ).show()
         } catch (e: Exception) {
             Toast.makeText(appContext, R.string.wrong_pas_login, Toast.LENGTH_SHORT).show()
             _dataState.value = FeedModelState(error = true)
@@ -51,18 +55,26 @@ class LoginRegViewModel @Inject constructor (
     }
 
 
-    fun sendRegistration(login: String, pass: String, name: String)= viewModelScope.launch {
+    fun sendRegistration(login: String, pass: String, name: String) = viewModelScope.launch {
         try {
             if (photo.value != null) {
                 val token = repository.registrationWithPhoto(login, pass, name, photo.value!!)
                 appAuth.setToken(token)
-                Toast.makeText(appContext, appContext.getString(R.string.signed_in) + login, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    appContext,
+                    appContext.getString(R.string.signed_in) + login,
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
                 val token = repository.registration(login, pass, name)
                 appAuth.setToken(token)
-                Toast.makeText(appContext, appContext.getString(R.string.signed_in) + login, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    appContext,
+                    appContext.getString(R.string.signed_in) + login,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Toast.makeText(appContext, R.string.error_registr, Toast.LENGTH_SHORT).show()
             _dataState.value = FeedModelState(error = true)
         }

@@ -52,7 +52,7 @@ class RegistrationFragment : Fragment() {
 
         with(binding) {
 
-            fun textStatMaker(bool: Boolean){
+            fun textStatMaker(bool: Boolean) {
                 textFieldPassAgainIn.isEnabled = bool
                 textFieldNameIn.isEnabled = bool
                 textFieldLoginIn.isEnabled = bool
@@ -75,7 +75,8 @@ class RegistrationFragment : Fragment() {
                     viewLoginModel.sendRegistration(login, pass, name)
                     textStatMaker(false)
                 } else {
-                    Toast.makeText(context, getString(R.string.not_match), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.not_match), Toast.LENGTH_SHORT)
+                        .show()
                     textFieldPassAgainIn.setText("")
                     textFieldPassIn.setText("")
                     textStatMaker(true)

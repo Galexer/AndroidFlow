@@ -22,7 +22,18 @@ data class PostEntity(
     val attachment: Attachment? = null,
     val ownedByMe: Boolean = false,
 ) {
-    fun toDto() = Post(id, author, authorId, authorAvatar, content, published, likedByMe, likes, attachment, ownedByMe)
+    fun toDto() = Post(
+        id,
+        author,
+        authorId,
+        authorAvatar,
+        content,
+        published,
+        likedByMe,
+        likes,
+        attachment,
+        ownedByMe
+    )
 
     companion object {
         fun fromDto(dto: Post, hidden: Boolean) =
@@ -43,4 +54,5 @@ data class PostEntity(
 }
 
 fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)
-fun List<Post>.toEntity(hidden: Boolean = false): List<PostEntity> = map{ PostEntity.fromDto(it, hidden) }
+fun List<Post>.toEntity(hidden: Boolean = false): List<PostEntity> =
+    map { PostEntity.fromDto(it, hidden) }
