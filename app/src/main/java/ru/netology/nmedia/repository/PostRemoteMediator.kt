@@ -27,39 +27,53 @@ class PostRemoteMediator(
         try {
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    if(postRemoteKeyDao.max() != null) {
-                        service.getAfter(postRemoteKeyDao.max()!!, state.config.pageSize)
-                    } else{
+                    if (postRemoteKeyDao.max() != null) {
+                        postRemoteKeyDao.max()?.let {
+                            service.getAfter(it, state.config.pageSize)
+                        }
+                    } else {
                         service.getLatest(state.config.pageSize)
                     }
                 }
-                LoadType.PREPEND -> return MediatorResult.Success(false)
+                LoadType.PREPEND -> {
+                    return MediatorResult.Success(false)
+                }
                 LoadType.APPEND -> {
                     val id = postRemoteKeyDao.min() ?: return MediatorResult.Success(false)
                     service.getBefore(id, state.config.pageSize)
                 }
             }
 
-            if (!response.isSuccessful) {
+            if ((response != null) && !response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
-            val body = response.body() ?: throw ApiError(
+            val body = response!!.body() ?: throw ApiError(
                 response.code(),
                 response.message(),
             )
             appDb.withTransaction {
                 when (loadType) {
                     LoadType.REFRESH -> {
-                        postRemoteKeyDao.removeAll()
                         postRemoteKeyDao.insert(
-                            listOf(
-                                PostRemoteKeyEntity(
-                                    PostRemoteKeyEntity.keyType.AFTER, body.first().id
-                                ),
-                                PostRemoteKeyEntity(
-                                    PostRemoteKeyEntity.keyType.BEFORE, body.last().id
+                            if (postRemoteKeyDao.isEmpty()) {
+                                listOf(
+                                    PostRemoteKeyEntity(
+                                        PostRemoteKeyEntity.keyType.AFTER,
+                                        body.first().id
+                                    ),
+                                    PostRemoteKeyEntity(
+                                        PostRemoteKeyEntity.keyType.BEFORE,
+                                        body.last().id
+                                    )
                                 )
-                            )
+                            } else {
+                                listOf(
+                                    PostRemoteKeyEntity(
+                                        PostRemoteKeyEntity.keyType.AFTER,
+                                        body.first().id
+                                    )
+                                )
+                            }
                         )
                     }
                     LoadType.PREPEND -> {
