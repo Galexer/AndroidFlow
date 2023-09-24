@@ -46,4 +46,8 @@
     <string name="logged_in">Вы вошли как</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
+    <string name="today">сегодня</string>
+    <string name="yesterday">вчера</string>
+    <string name="last_week">на прошлой неделе</string>
+    <string name="unknown_day">неизвестный день</string>
 </resources>
