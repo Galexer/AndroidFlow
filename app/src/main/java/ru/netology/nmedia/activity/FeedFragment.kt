@@ -129,11 +129,11 @@ class FeedFragment() : Fragment() {
             adapter.refresh()
         }
 
-        lifecycleScope.launchWhenCreated {
-            authViewModel.data.observe(viewLifecycleOwner) {
-                adapter.refresh()
-            }
+
+        authViewModel.data.observe(viewLifecycleOwner) {
+            adapter.refresh()
         }
+
 
         binding.fab.setOnClickListener {
             if (authViewModel.isAuthorized) {
